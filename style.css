@@ -264,7 +264,6 @@ main {
   letter-spacing: 0.02em;
   max-height: calc(1.9em * 3);
   overflow: hidden;
-  position: relative;
   transition: filter var(--t2);
 }
 
@@ -273,6 +272,7 @@ main {
 .word { display: inline-block; margin-right: 0.44em; position: relative; }
 .word.correct { color: var(--correct); }
 .word.wrong { color: var(--err); text-decoration: underline; text-decoration-color: rgba(248,113,113,0.4); text-underline-offset: 3px; }
+.word.skipped { color: #facc15; text-decoration: underline; text-decoration-color: rgba(250,204,21,0.4); text-underline-offset: 3px; }
 .word.current { color: var(--txt); }
 
 .letter { display: inline-block; position: relative; transition: color var(--t1); }
