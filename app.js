@@ -127,8 +127,6 @@ function buildWords() {
   els.words.style.transform = 'translateY(0)';
 }
 
-let lastLine = 0;
-
 function updateDisplay() {
   const wordEls = els.words.querySelectorAll('.word');
   els.words.querySelectorAll('.cur, .cur-end').forEach(e => e.classList.remove('cur', 'cur-end'));
@@ -181,13 +179,30 @@ function updateDisplay() {
 }
 
 function scrollWords() {
-  const active = els.words.querySelectorAll('.word')[state.wordIdx];
+  const allWordEls = els.words.querySelectorAll('.word');
+  const active = allWordEls[state.wordIdx];
   if (!active) return;
+
   const lh = parseFloat(getComputedStyle(els.words).lineHeight);
-  const line = Math.round(active.offsetTop / lh);
-  if (line > 1 && line !== lastLine) {
-    els.words.style.transform = `translateY(-${(line - 1) * lh}px)`;
-    lastLine = line;
+
+  // Get current translateY from the applied transform
+  const matrix = new DOMMatrix(getComputedStyle(els.words).transform);
+  const currentShift = Math.abs(matrix.m42);
+
+  // offsetTop is relative to offsetParent (probably #test-area)
+  // els.words.offsetTop gives the words container's top within that same parent
+  // So subtracting gives position relative to #words itself
+  const relTop = active.offsetTop - els.words.offsetTop;
+
+  // Which line is this word on (0-indexed)
+  const line = Math.round(relTop / lh);
+
+  // We want to keep the active word always on line 1 (second visible line)
+  // so scroll = (line - 1) * lineHeight, but only move forward
+  const targetShift = Math.max(0, (line - 1) * lh);
+
+  if (targetShift > currentShift) {
+    els.words.style.transform = `translateY(-${targetShift}px)`;
   }
 }
 
@@ -268,8 +283,8 @@ function onInput() {
       return;
     }
 
-    if (state.mode === 'time' && state.wordIdx >= state.words.length - 20) {
-      const extra = genWords(30);
+    if (state.mode === 'time' && state.wordIdx >= state.words.length - 40) {
+      const extra = genWords(60);
       state.words.push(...extra);
       appendWords(extra);
     }
@@ -296,9 +311,8 @@ function reset() {
     wordIdx: 0, buf: '', started: false, done: false, startTime: null,
     history: [], correctChars: 0, wrongChars: 0, extraChars: 0, keystrokes: 0,
   });
-  lastLine = 0;
 
-  const count = state.mode === 'time' ? 80 : (state.mode === 'quote' ? 999 : state.wordOpt);
+  const count = state.mode === 'time' ? 150 : (state.mode === 'quote' ? 999 : state.wordOpt);
   state.words = genWords(count);
 
   els.liveWpm.textContent = '0';
