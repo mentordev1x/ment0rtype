@@ -183,13 +183,28 @@ function updateDisplay() {
 function scrollWords() {
   const active = els.words.querySelectorAll('.word')[state.wordIdx];
   if (!active) return;
-  const top = active.getBoundingClientRect().top - els.words.getBoundingClientRect().top;
   const lh = parseFloat(getComputedStyle(els.words).lineHeight);
-  const line = Math.round(top / lh);
+  const line = Math.round(active.offsetTop / lh);
   if (line > 1 && line !== lastLine) {
     els.words.style.transform = `translateY(-${(line - 1) * lh}px)`;
     lastLine = line;
   }
+}
+
+function appendWords(newWords) {
+  const startIdx = state.words.length - newWords.length;
+  newWords.forEach((word, i) => {
+    const span = document.createElement('span');
+    span.className = 'word';
+    span.dataset.i = startIdx + i;
+    [...word].forEach(ch => {
+      const l = document.createElement('span');
+      l.className = 'letter';
+      l.textContent = ch;
+      span.appendChild(l);
+    });
+    els.words.appendChild(span);
+  });
 }
 
 function startTimer() {
@@ -254,8 +269,9 @@ function onInput() {
     }
 
     if (state.mode === 'time' && state.wordIdx >= state.words.length - 20) {
-      state.words.push(...genWords(30));
-      buildWords();
+      const extra = genWords(30);
+      state.words.push(...extra);
+      appendWords(extra);
     }
 
     updateDisplay();
