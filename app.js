@@ -19,6 +19,7 @@ const state = {
 
   words: [],
   wordIdx: 0,
+  wordResults: [],
   buf: '',
   started: false,
   done: false,
@@ -124,7 +125,7 @@ function buildWords() {
     });
     els.words.appendChild(span);
   });
-  els.words.style.transform = 'translateY(0)';
+  els.words.scrollTo(0, 0);
 }
 
 function updateDisplay() {
@@ -136,7 +137,10 @@ function updateDisplay() {
     wEl.classList.remove('current', 'correct', 'wrong');
 
     if (wi < state.wordIdx) {
-      wEl.classList.add('correct');
+      const r = state.wordResults[wi];
+      if (r === 'skipped') wEl.classList.add('skipped');
+      else if (r === 'wrong') wEl.classList.add('wrong');
+      else wEl.classList.add('correct');
       return;
     }
 
@@ -179,31 +183,15 @@ function updateDisplay() {
 }
 
 function scrollWords() {
-  const allWordEls = els.words.querySelectorAll('.word');
-  const active = allWordEls[state.wordIdx];
+  const active = els.words.querySelectorAll('.word')[state.wordIdx];
   if (!active) return;
 
   const lh = parseFloat(getComputedStyle(els.words).lineHeight);
-
-  // Get current translateY from the applied transform
-  const matrix = new DOMMatrix(getComputedStyle(els.words).transform);
-  const currentShift = Math.abs(matrix.m42);
-
-  // offsetTop is relative to offsetParent (probably #test-area)
-  // els.words.offsetTop gives the words container's top within that same parent
-  // So subtracting gives position relative to #words itself
   const relTop = active.offsetTop - els.words.offsetTop;
-
-  // Which line is this word on (0-indexed)
   const line = Math.round(relTop / lh);
+  const shift = Math.max(0, (line - 1) * lh);
 
-  // We want to keep the active word always on line 1 (second visible line)
-  // so scroll = (line - 1) * lineHeight, but only move forward
-  const targetShift = Math.max(0, (line - 1) * lh);
-
-  if (targetShift > currentShift) {
-    els.words.style.transform = `translateY(-${targetShift}px)`;
-  }
+  els.words.scrollTo({ top: shift, behavior: 'smooth' });
 }
 
 function appendWords(newWords) {
@@ -278,6 +266,10 @@ function onInput() {
     state.buf = '';
     els.inp.value = '';
 
+    // Record result for this word
+    const result = typed === '' ? 'skipped' : (typed === word ? 'correct' : 'wrong');
+    state.wordResults[state.wordIdx - 1] = result;
+
     if (state.mode !== 'time' && state.wordIdx >= state.words.length) {
       finish();
       return;
@@ -309,10 +301,10 @@ function reset() {
   stopTimer();
   Object.assign(state, {
     wordIdx: 0, buf: '', started: false, done: false, startTime: null,
-    history: [], correctChars: 0, wrongChars: 0, extraChars: 0, keystrokes: 0,
+    history: [], wordResults: [], correctChars: 0, wrongChars: 0, extraChars: 0, keystrokes: 0,
   });
 
-  const count = state.mode === 'time' ? 150 : (state.mode === 'quote' ? 999 : state.wordOpt);
+  const count = state.mode === 'time' ? 2000 : (state.mode === 'quote' ? 999 : state.wordOpt);
   state.words = genWords(count);
 
   els.liveWpm.textContent = '0';
