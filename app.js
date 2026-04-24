@@ -20,6 +20,7 @@ const state = {
   words: [],
   wordIdx: 0,
   wordResults: [],
+  wordBufs: [],
   buf: '',
   started: false,
   done: false,
@@ -57,6 +58,7 @@ const els = {
   chkCapitals: $('chk-capitals'),
   chkCursor: $('chk-cursor'),
   toasts: $('toasts'),
+  dragHandle: $('drag-handle'),
 };
 
 function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
@@ -241,6 +243,32 @@ function stopTimer() {
   state.timer = null;
 }
 
+function countWordMetrics(typed, word) {
+  let correct = 0;
+  let wrong = 0;
+  let extra = 0;
+  for (let i = 0; i < Math.max(typed.length, word.length); i++) {
+    if (typed[i] === word[i]) correct++;
+    else wrong++;
+  }
+  if (typed.length > word.length) extra = typed.length - word.length;
+  return { correct, wrong, extra };
+}
+
+function moveBackOneWord() {
+  if (state.wordIdx === 0 || state.done) return;
+  state.wordIdx--;
+  const word = state.words[state.wordIdx];
+  const typed = state.wordBufs[state.wordIdx] || '';
+  const metrics = countWordMetrics(typed, word);
+  state.correctChars -= metrics.correct;
+  state.wrongChars -= metrics.wrong;
+  state.extraChars -= metrics.extra;
+  state.buf = typed;
+  els.inp.value = typed;
+  updateDisplay();
+}
+
 function onInput() {
   if (state.done) return;
   const val = els.inp.value;
@@ -257,10 +285,11 @@ function onInput() {
     state.keystrokes++;
     const typed = val.trimEnd();
     const word = state.words[state.wordIdx];
-    for (let i = 0; i < Math.max(typed.length, word.length); i++) {
-      typed[i] === word[i] ? state.correctChars++ : state.wrongChars++;
-    }
-    if (typed.length > word.length) state.extraChars += typed.length - word.length;
+    const metrics = countWordMetrics(typed, word);
+    state.correctChars += metrics.correct;
+    state.wrongChars += metrics.wrong;
+    state.extraChars += metrics.extra;
+    state.wordBufs[state.wordIdx] = typed;
 
     state.wordIdx++;
     state.buf = '';
@@ -291,6 +320,11 @@ function onInput() {
 }
 
 function onKeyDown(e) {
+  if (e.key === 'Backspace' && els.inp.value === '' && state.wordIdx > 0 && !state.done) {
+    e.preventDefault();
+    moveBackOneWord();
+    return;
+  }
   if (e.key === 'Tab') { e.preventDefault(); state.tabHeld = true; return; }
   if (e.key === 'Enter' && state.tabHeld) { e.preventDefault(); state.tabHeld = false; reset(); return; }
   if (e.key !== 'Tab') state.tabHeld = false;
@@ -301,7 +335,7 @@ function reset() {
   stopTimer();
   Object.assign(state, {
     wordIdx: 0, buf: '', started: false, done: false, startTime: null,
-    history: [], wordResults: [], correctChars: 0, wrongChars: 0, extraChars: 0, keystrokes: 0,
+    history: [], wordResults: [], wordBufs: [], correctChars: 0, wrongChars: 0, extraChars: 0, keystrokes: 0,
   });
 
   const count = state.mode === 'time' ? 2000 : (state.mode === 'quote' ? 999 : state.wordOpt);
@@ -500,7 +534,46 @@ function initParticles() {
 function init() {
   initParticles();
 
-  els.testArea.addEventListener('click', () => els.inp.focus());
+  // Draggable test area
+  let isDragging = false;
+  let dragX = 0, dragY = 0;
+  let curX = 0, curY = 0;
+
+  els.dragHandle.addEventListener('mousedown', e => {
+    isDragging = true;
+    dragX = e.clientX;
+    dragY = e.clientY;
+    els.testArea.style.zIndex = '100';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    curX += e.clientX - dragX;
+    curY += e.clientY - dragY;
+    dragX = e.clientX;
+    dragY = e.clientY;
+    els.testArea.style.transform = `translate(${curX}px, ${curY}px)`;
+  });
+
+  document.addEventListener('mouseup', () => {
+    if (isDragging) {
+      isDragging = false;
+      document.body.style.userSelect = '';
+      els.testArea.style.zIndex = '';
+    }
+  });
+
+  els.dragHandle.addEventListener('dblclick', () => {
+    curX = 0; curY = 0;
+    els.testArea.style.transform = 'none';
+    els.testArea.style.width = '';
+    els.testArea.style.height = '';
+  });
+
+  els.testArea.addEventListener('click', (e) => {
+    if(!els.dragHandle.contains(e.target)) els.inp.focus();
+  });
   document.addEventListener('keydown', e => {
     if (['INPUT','BUTTON','TEXTAREA'].includes(e.target.tagName) && e.target !== els.inp) return;
     if (!['Tab','Escape'].includes(e.key)) els.inp.focus();
