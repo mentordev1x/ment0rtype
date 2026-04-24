@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ment0rType - Yazma hızı testi. Türkçe ve İngilizce." />
+  <title>ment0rType</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div id="bg"></div>
+
+  <header>
+    <a href="#" id="logo-btn" class="logo">
+      <span class="logo-icon">⌨</span>
+      <span class="logo-text">ment0rType</span>
+    </a>
+    <nav>
+      <button id="nav-settings" class="icon-btn" title="Ayarlar">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button id="lang-btn" class="icon-btn lang-btn">TR</button>
+    </nav>
+  </header>
+
+  <main>
+    <div id="mode-bar">
+      <div class="mode-group">
+        <button class="mode-btn active" data-mode="time">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span data-tr="süre" data-en="time">süre</span>
+        </button>
+        <button class="mode-btn" data-mode="words">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h12"/></svg>
+          <span data-tr="kelime" data-en="words">kelime</span>
+        </button>
+        <button class="mode-btn" data-mode="quote">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+          <span data-tr="alıntı" data-en="quote">alıntı</span>
+        </button>
+        <div class="sep"></div>
+        <button class="mode-btn toggle" id="toggle-punct">
+          <span data-tr="noktalama" data-en="punctuation">noktalama</span>
+        </button>
+        <button class="mode-btn toggle" id="toggle-numbers">
+          <span data-tr="sayılar" data-en="numbers">sayılar</span>
+        </button>
+        <div class="sep"></div>
+        <button class="mode-btn toggle active" id="toggle-aob">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span data-tr="canlı aob" data-en="live wpm">canlı aob</span>
+        </button>
+      </div>
+      <div id="mode-opts"></div>
+    </div>
+
+    <div id="test-area">
+      <div id="live-stats">
+        <span id="live-wpm">0</span>
+        <span class="stat-label" data-tr="aob" data-en="wpm">aob</span>
+        <span id="live-timer"></span>
+      </div>
+      <div id="words"></div>
+      <input id="inp" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
+      <div id="hint">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+        <span data-tr="yazmaya başlamak için tıkla veya herhangi bir tuşa bas" data-en="click or press any key to start">yazmaya başlamak için tıkla veya herhangi bir tuşa bas</span>
+      </div>
+    </div>
+
+    <div id="action-bar">
+      <button id="restart-btn" class="icon-btn" title="Yeniden Başlat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+      </button>
+      <span class="shortcut">Tab + Enter</span>
+    </div>
+
+    <div id="results" class="hidden">
+      <div class="result-card">
+        <p class="result-section-label" data-tr="sonuçlar" data-en="results">sonuçlar</p>
+        <div class="result-grid">
+          <div class="result-block big">
+            <div class="val" id="r-wpm">0</div>
+            <div class="lbl">aob / wpm</div>
+          </div>
+          <div class="result-block">
+            <div class="val" id="r-acc">0%</div>
+            <div class="lbl" data-tr="doğruluk" data-en="accuracy">doğruluk</div>
+          </div>
+          <div class="result-block">
+            <div class="val" id="r-raw">0</div>
+            <div class="lbl" data-tr="ham aob" data-en="raw">ham aob</div>
+          </div>
+          <div class="result-block">
+            <div class="val" id="r-cons">0%</div>
+            <div class="lbl" data-tr="tutarlılık" data-en="consistency">tutarlılık</div>
+          </div>
+        </div>
+        <div class="result-meta">
+          <span><span class="meta-key" data-tr="süre" data-en="time">süre</span> <span id="r-time">0s</span></span>
+          <span><span class="meta-key" data-tr="karakterler" data-en="chars">karakterler</span> <span id="r-chars">-</span></span>
+          <span><span class="meta-key" data-tr="dil" data-en="language">dil</span> <span id="r-lang">TR</span></span>
+          <span><span class="meta-key" data-tr="mod" data-en="mode">mod</span> <span id="r-mode">-</span></span>
+        </div>
+        <canvas id="chart"></canvas>
+        <div class="result-actions">
+          <button class="btn-primary" id="next-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="5 12 19 12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <span data-tr="sonraki test" data-en="next test">sonraki test</span>
+          </button>
+          <button class="btn-ghost" id="redo-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4"/></svg>
+            <span data-tr="tekrar" data-en="redo">tekrar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="settings-overlay" class="overlay hidden"></div>
+  <aside id="settings-panel" class="panel hidden">
+    <div class="panel-header">
+      <h2 data-tr="ayarlar" data-en="settings">ayarlar</h2>
+      <button id="settings-close" class="icon-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="panel-body">
+      <div class="s-group">
+        <h3 data-tr="dil" data-en="language">dil</h3>
+        <div class="s-row">
+          <span data-tr="test dili" data-en="test language">test dili</span>
+          <div class="s-ctrl">
+            <button class="pill active" id="lang-tr">🇹🇷 Türkçe</button>
+            <button class="pill" id="lang-en">🇺🇸 English</button>
+          </div>
+        </div>
+      </div>
+      <div class="s-group">
+        <h3 data-tr="kelime uzunluğu" data-en="word length">kelime uzunluğu</h3>
+        <div class="s-row">
+          <span data-tr="minimum" data-en="minimum">minimum</span>
+          <div class="s-ctrl slider-ctrl">
+            <input type="range" id="min-len" min="1" max="10" value="1" />
+            <span id="min-len-val">1</span>
+          </div>
+        </div>
+        <div class="s-row">
+          <span data-tr="maksimum" data-en="maximum">maksimum</span>
+          <div class="s-ctrl slider-ctrl">
+            <input type="range" id="max-len" min="2" max="15" value="15" />
+            <span id="max-len-val">15</span>
+          </div>
+        </div>
+        <div class="s-row">
+          <span data-tr="kelime listesi" data-en="word list">kelime listesi</span>
+          <div class="s-ctrl">
+            <button class="pill active" data-wl="basic"><span data-tr="temel" data-en="basic">temel</span></button>
+            <button class="pill" data-wl="common"><span data-tr="yaygın" data-en="common">yaygın</span></button>
+            <button class="pill" data-wl="advanced"><span data-tr="gelişmiş" data-en="advanced">gelişmiş</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="s-group">
+        <h3 data-tr="görünüm" data-en="appearance">görünüm</h3>
+        <div class="s-row">
+          <span data-tr="yazı boyutu" data-en="font size">yazı boyutu</span>
+          <div class="s-ctrl slider-ctrl">
+            <input type="range" id="font-size" min="14" max="36" value="22" />
+            <span id="font-size-val">22px</span>
+          </div>
+        </div>
+        <div class="s-row">
+          <span data-tr="büyük harf" data-en="capitals">büyük harf</span>
+          <label class="switch">
+            <input type="checkbox" id="chk-capitals" />
+            <span class="track"></span>
+          </label>
+        </div>
+        <div class="s-row">
+          <span data-tr="cursor animasyonu" data-en="cursor blink">cursor animasyonu</span>
+          <label class="switch">
+            <input type="checkbox" id="chk-cursor" checked />
+            <span class="track"></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div id="toasts"></div>
+
+  <footer>
+    <span>Tab <kbd>↹</kbd> + Enter <kbd>↵</kbd> — <span data-tr="yeniden başlat" data-en="restart">yeniden başlat</span></span>
+    <span>ment0rType</span>
+  </footer>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
