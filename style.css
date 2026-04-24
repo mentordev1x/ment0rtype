@@ -126,7 +126,7 @@ main {
   position: relative;
   z-index: 1;
   flex: 1;
-  max-width: 980px;
+  max-width: 1300px;
   width: 100%;
   margin: 0 auto;
   padding: 2rem 1.5rem 6rem;
@@ -212,13 +212,39 @@ main {
   padding: 2.5rem 3rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04);
   cursor: text;
-  min-height: 190px;
+  width: min(760px, 95vw);
+  height: 380px;
+  min-width: 320px;
+  min-height: 320px;
+  max-width: 95vw;
+  max-height: 80vh;
+  margin: 0 auto;
+  resize: both;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   animation: fadeUp 0.4s ease 0.1s both;
   transition: border-color var(--t2), box-shadow var(--t2);
 }
 
 #test-area:hover { border-color: var(--border2); }
 #test-area.typing { border-color: rgba(139,92,246,0.4); box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 0 1px rgba(139,92,246,0.12), inset 0 1px 0 rgba(255,255,255,0.04); }
+
+.drag-handle {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--txt3);
+  cursor: grab;
+  padding: 4px;
+  border-radius: var(--r1);
+  transition: all var(--t2);
+  z-index: 10;
+  display: flex;
+}
+.drag-handle:hover { color: var(--p4); background: var(--pdim); }
+.drag-handle:active { cursor: grabbing; }
 
 @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 
@@ -262,7 +288,7 @@ main {
   line-height: 1.9;
   color: var(--txt3);
   letter-spacing: 0.02em;
-  max-height: calc(1.9em * 3);
+  flex: 1;
   overflow: hidden;
   transition: filter var(--t2);
 }
