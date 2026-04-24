@@ -264,6 +264,7 @@ main {
   letter-spacing: 0.02em;
   max-height: calc(1.9em * 3);
   overflow: hidden;
+  position: relative;
   transition: filter var(--t2);
 }
 
